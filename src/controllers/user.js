@@ -6,16 +6,17 @@ import "dotenv/config";
 import { cryptoToken } from "../utils/helpers.js";
 import sendEmail from "../utils/sendEmail.js";
 import sendHtml from "../utils/sendHtml.js";
+import { novu } from "../utils/novuhandler.js";
 
 export const registerUser = async (req, res) => {
   const { email, password } = req.body;
 
   const salt = await bcrypt.genSalt(10);
+
   const userExist = await User.findOne({ email });
 
   if (userExist) {
     return res.status(409).json({
-      status: 409,
       error: "Duplicate User",
     });
   }
@@ -37,11 +38,19 @@ export const registerUser = async (req, res) => {
 
     const url = new URL(process.env.VERIFY_URL + user._id);
     url.searchParams.set("token", token);
-    console.log(url);
+    await novu.subscribers.identify(newUser._id, {
+      email: newUser.email,
+    });
     await sendEmail(email, "Verify your account", sendHtml(url));
-
+    await novu.trigger("getting-started", {
+      to: {
+        subscriberId: newUser._id,
+      },
+      payload: {
+        name: user.email,
+      },
+    });
     return res.status(201).json({
-      status: 201,
       message: "Successfully registered",
       data: { id: user._id, email },
     });
@@ -49,12 +58,10 @@ export const registerUser = async (req, res) => {
     console.log(err);
     if (err.code === 11000) {
       return res.status(409).json({
-        status: 409,
         error: "Duplicate user credentials!",
       });
     } else {
       return res.status(500).json({
-        status: 500,
         error: "Server Error!",
       });
     }
@@ -65,9 +72,7 @@ export const loginUser = async (req, res) => {
   const { email, password } = req.body;
   const userExist = await User.findOne({ email });
   if (!userExist) {
-    return res
-      .status(404)
-      .json({ status: 404, message: "User not found", token: null });
+    return res.status(404).json({ error: "User not found", token: null });
   }
   try {
     const match = await bcrypt.compare(password, userExist.password);
@@ -77,22 +82,16 @@ export const loginUser = async (req, res) => {
     if (match) {
       return userExist.verified
         ? res.status(200).json({
-            status: 200,
             message: "Successfully logged in",
             token: token,
           })
-        : res
-            .status(403)
-            .json({ status: 403, message: "Verify account", token: null });
+        : res.status(403).json({ error: "Account not verified", token: null });
     }
-    return res
-      .status(409)
-      .json({ status: 409, message: "Incorrect Password", token: null });
+    return res.status(409).json({ error: "Incorrect Password", token: null });
   } catch (err) {
     console.log(err);
     return res.status(400).json({
-      status: 400,
-      message: "Error decrypting",
+      error: "Error decrypting",
       token: null,
     });
   }
@@ -123,8 +122,24 @@ export const verifyUser = async (req, res) => {
     return res.status(400).json({ errors: "Invalid Link" });
   } catch (error) {
     res.status(500).json({
-      status: 500,
-      message: "Server error",
+      error: "Server error",
+    });
+  }
+};
+
+export const getUser = async (req, res) => {
+  const { id } = req.params;
+  const auth = req.auth;
+  try {
+    const user = await User.findOne({ _id: id });
+    if (!user) return res.status(404).json({ error: "User not found" });
+    const { password, verified, ...info } = user;
+    if (!auth) return res.status(200).json({ data: info });
+    return res.status(200).json({ data: user });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      error: "Server error",
     });
   }
 };
