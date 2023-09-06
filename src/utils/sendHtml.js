@@ -36,6 +36,11 @@ export default function sendHtml(url) {
         padding: 20px;
         text-align: center;
       }
+
+      button{
+        padding:5px 8px;
+        background:#31E3C1
+      }
     </style>
   </head>
   <body>
@@ -48,7 +53,9 @@ export default function sendHtml(url) {
       <p>We just need to verify your email address before you can access <strong>Techstar Community</strong>.</p>
       <p>To verify your email address, please click on the following link:</p>
       <button><a href="${url}" target="_blank">Verify your email address</a></button>
-      <p>If you don't click on the link within 10 hours, your account will be deleted.</p>
+      <p>If the above link is not working, copy and paste the following link in your browser</p>
+      <p><i>${url}</i></p>
+      <p>If you don't click on the link within 10 hours, your account will be inactivated.</p>
       <p>Thank you for your patience.</p>
     </main>
     <footer>
