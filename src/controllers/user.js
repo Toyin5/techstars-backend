@@ -9,7 +9,7 @@ import sendHtml from "../utils/sendHtml.js";
 import { novu } from "../utils/novuhandler.js";
 
 export const registerUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, firstName, lastName } = req.body;
 
   const salt = await bcrypt.genSalt(10);
 
@@ -25,6 +25,8 @@ export const registerUser = async (req, res) => {
     const newUser = new User({
       email,
       password: await bcrypt.hash(password, salt),
+      first_name: firstName,
+      last_name: lastName,
     });
     const user = await newUser.save();
 

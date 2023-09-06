@@ -12,17 +12,25 @@ const UserSchema = new Schema(
       required: true,
       unique: true,
     },
-    password: {
+    first_name: {
       type: String,
       required: true,
     },
-    name: {
+    last_name: {
       type: String,
+      required: true,
+    },
+    password: {
+      type: String,
+      required: true,
     },
     socials: [String],
     verified: {
       type: Boolean,
       default: false,
+    },
+    intro: {
+      type: String,
     },
   },
   { timestamps: true }
