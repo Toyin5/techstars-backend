@@ -7,6 +7,9 @@
     "start": "node ./src/index.js",
     "dev": "nodemon ./src/index.js"
   },
+  "engines":{
+    "node": ">=16.x"
+  },
   "type": "module",
   "keywords": [],
   "author": "Toyin Muhammed",
