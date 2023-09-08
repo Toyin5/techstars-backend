@@ -131,12 +131,12 @@ export const verifyUser = async (req, res) => {
 
 export const getUser = async (req, res) => {
   const { id } = req.params;
-  const auth = req.auth;
+  // const auth = req.auth;
   try {
     const user = await User.findOne({ _id: id });
     if (!user) return res.status(404).json({ error: "User not found" });
-    const { password, verified, ...info } = user;
-    if (!auth) return res.status(200).json({ data: info });
+    // const { password, verified, ...info } = user;
+    // if (!auth) return res.status(200).json({ data: info });
     return res.status(200).json({ data: user });
   } catch (err) {
     console.log(err);

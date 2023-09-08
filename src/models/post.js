@@ -19,7 +19,7 @@ const PostSchema = new Schema(
     },
     uploader: {
       type: Schema.Types.UUID,
-      ref: user,
+      // ref: user,
     },
     views: {
       type: Number,
@@ -33,13 +33,21 @@ const PostSchema = new Schema(
         },
         author: {
           type: Schema.Types.UUID,
-          ref: user,
+          // ref: user,
         },
       },
     ],
     content: {
       type: Schema.Types.Buffer,
       required: true,
+    },
+    upvote: {
+      type: Number,
+      default: 0,
+    },
+    downvote: {
+      type: Number,
+      default: 0,
     },
   },
   { timestamps: true }

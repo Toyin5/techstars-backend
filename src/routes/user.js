@@ -5,6 +5,7 @@ import {
   registerUser,
   verifyUser,
 } from "../controllers/user.js";
+import { checkHeader } from "../middlewares/auth.js";
 
 const userRoute = express.Router();
 

@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { randomUUID } from "crypto";
+import post from "./post.js";
 
 const UserSchema = new Schema(
   {
@@ -32,6 +33,18 @@ const UserSchema = new Schema(
     intro: {
       type: String,
     },
+    upvotes: [
+      {
+        type: Schema.Types.UUID,
+        // ref: post,
+      },
+    ],
+    downvotes: [
+      {
+        type: Schema.Types.UUID,
+        // ref: post,
+      },
+    ],
   },
   { timestamps: true }
 );
